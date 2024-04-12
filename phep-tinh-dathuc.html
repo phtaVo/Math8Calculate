@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phép tính đa thức</title>
+    <link rel="stylesheet" href="phep-tinh-dathuc.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Phép tính đa thức</h1>
+        <input type="text" id="operandA" placeholder="Đa thức A...">
+        <input type="text" id="operandB" placeholder="Đa thức B...">
+        <select id="operator">
+            <option value="+">Cộng</option>
+            <option value="-">Trừ</option>
+            <option value="*">Nhân</option>
+            <option value="/">Chia</option>
+        </select>
+        <button onclick="calculate()">Giải</button>
+        <div id="result" class="result-box"></div>
+    </div>
+    <script>
+        function tachdt(s) {
+            let bt = s.match(/([+-]?\d*)/);
+            let hs = bt[1] ? bt[1] : '1';
+            let b = hs != '1' ? s.replace(hs, '') : s;
+            if (hs === '-' && b.length > 0 && ['+', '-'].includes(b[0])) {
+                b = b.length > 1 ? b.slice(1) : '';
+                hs += '1';
+            }
+            return [hs, b];
+        }
+
+        function rut_gon_dt(a) {
+            let gop = a.match(/[-+]?\s*\d*[\w^]*/g).filter(x => x.trim() !== '').map(i => i.trim());
+            let bt = [];
+            let bien = [];
+            gop.forEach(i => {
+                if ((tachdt(i)[0] === '+' || tachdt(i)[0] === '-') && tachdt(i)[0].length === 1) {
+                    bt.push(tachdt(i));
+                    bt[bt.length - 1][0] += '1';
+                    bien.push(tachdt(i)[1]);
+                } else {
+                    bt.push(tachdt(i));
+                    bien.push(tachdt(i)[1]);
+                }
+            });
+            let loc = [...new Set(bien)];
+            let res = [];
+            loc.forEach(i => {
+                let r_v = '';
+                bt.forEach(j => {
+                    if (j[1] === i) {
+                        r_v += j[0];
+                    }
+                });
+                if (eval(r_v) === 1) {
+                    res.push(i);
+                } else if (eval(r_v) === -1) {
+                    res.push(`-${i}`);
+                } else if (eval(r_v) !== 0) {
+                    res.push(`${eval(r_v)}${i}`);
+                }
+            });
+            let r = res[0];
+            for (let i = 1; i < res.length; i++) {
+                if (!res[i].includes('-')) {
+                    r += `+ ${res[i]} `;
+                } else {
+                    res[i] = res[i].replace('-', '');
+                    r += `- ${res[i]} `;
+                }
+            }
+            return r;
+        }
+
+        function cong_tru_dt(a, b, pheptinh) {
+            if (pheptinh === '-') {
+                b = b.replace(/\+/g, 'temp').replace(/-/g, '+').replace(/temp/g, '-');
+                let gop = (a + pheptinh + b).match(/[-+]?\s*\d*[\w^]*/g).filter(x => x !== '').map(i => i.replace(/\s+/g, ''));
+                return rut_gon_dt(gop.join(' '));
+            } else {
+                let gop = (a + pheptinh + b).match(/[-+]?\s*\d*[\w^]*/g).filter(x => x !== '').map(i => i.replace(/\s+/g, ''));
+                return rut_gon_dt(gop.join(' '));
+            }
+        }
+
+        function calculate() {
+            var operandA = document.getElementById('operandA').value;
+            var operandB = document.getElementById('operandB').value;
+            var operator = document.getElementById('operator').value;
+
+            var resultBox = document.getElementById('result');
+            resultBox.textContent = 'A ' +operator+ ' B = ' + '('+operandA+') '+operator+' ('+operandB+') = '+cong_tru_dt(operandA, operandB, operator);
+            resultBox.style.display = "block";
+        }
+        window.onload = function () {
+            var resultBox = document.getElementById('result');
+            resultBox.style.display = "none";
+        };
+    </script>
+</body>
+</html>

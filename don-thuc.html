@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đơn thức và đa thức nhiều biến</title>
+    <link rel="stylesheet" href="don-thuc.css">
+</head>
+<body>
+    <div class="container">
+        <div class="theory-box">
+            <h2>Lý thuyết</h2>
+            <p>Đơn thức là biểu thức đại số chỉ gồm một số, hoặc một biến, hoặc một tích giữa các số và các biến.</p>
+            <p>Đa thức là một tổng của các đơn thức. Mỗi đơn thức trong tổng gọi là một hạng tử của đa thức đó.</p>
+        </div>
+        <div class="checker-box">
+            <h1>Kiểm tra biểu thức</h1>
+            <input type="text" id="expression-input" placeholder="Nhập vào đây một biểu thức để kiểm tra...">
+            <button onclick="checkExpression()">Kiểm tra</button>
+        </div>
+    </div>
+
+    <script>
+        function checkExpression() {
+            var s = document.getElementById('expression-input').value;
+            var t = s.split(/[+\-]/).filter(function(term) {
+                return term.trim() !== "";
+            });
+
+            if (t.length === 1) {
+                if (s.includes("/") && !s.includes("(")) {
+                    var p = s.split("/");
+                    if (!parseInt(p[0]) || !parseInt(p[1])) {
+                        displayResult(`${s} không phải là một đơn thức hay đa thức`,'red');
+                    }
+                } else if (s.includes("sqrt(")) {
+                    var p = s.split("sqrt(");
+                    if (!parseInt(p[p.length - 1].slice(0, -1))) {
+                        displayResult(`${s} không phải là một đơn thức hay đa thức`, 'red');
+                    }
+                }
+                displayResult(`${s} là một đơn thức hoặc một đa thức có 1 hạng tử`,'green');
+            } else if (t.length === 2 && s.includes("/")) {
+                var a = s.split("/");
+                if (s.includes("(-")) {
+                    displayResult(`${s} là một đơn thức hoặc một đa thức có 1 hạng tử`, 'green');
+                }
+                if (a[1].includes(")")) {
+                    var p = a[1].split(")");
+                    if (!parseInt(p[0])) {
+                        displayResult(`${s} không phải là một đơn thức hay đa thức`, 'red');
+                    } else {
+                        displayResult(`${s} là một đa thức có ${t.length} hạng tử`, 'green');
+                    }
+                } else {
+                    displayResult(`${s} là một đa thức có ${t.length} hạng tử`, 'green');
+                }
+            } else {
+                displayResult(`${s} là một đa thức có ${t.length} hạng tử`, 'green');
+            }
+        }
+
+        function displayResult(message, color) {
+            var resultBox = document.createElement("div");
+            resultBox.style.color = color;
+            resultBox.style.border = "2px solid #cc0000";
+            resultBox.style.backgroundColor = "#ffe6e6";
+            resultBox.style.padding = "10px";
+            resultBox.style.marginTop = "20px";
+            resultBox.innerText = message;
+
+            var checkerBox = document.querySelector(".checker-box");
+            checkerBox.appendChild(resultBox);
+        }
+    </script>
+</body>
+</html>
